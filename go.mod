@@ -1,3 +1,3 @@
-module go.jlucktay.dev/template-go
+module go.jlucktay.dev/version
 
-go 1.15
+go 1.16
