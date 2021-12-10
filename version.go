@@ -58,14 +58,18 @@ func Details() (string, error) {
 	}
 
 	if commit == "" {
-		cmd := exec.Command("git", "describe", "--always", "--dirty")
+		if _, err := exec.LookPath("git"); err != nil {
+			commit = "git-not-available"
+		} else {
+			cmd := exec.Command("git", "describe", "--always", "--dirty")
 
-		output, err := cmd.Output()
-		if err != nil {
-			return "", fmt.Errorf("could not run '%s': %w", cmd, err)
+			output, err := cmd.Output()
+			if err != nil {
+				return "", fmt.Errorf("could not run '%s': %w", cmd, err)
+			}
+
+			commit = strings.TrimSpace(string(output))
 		}
-
-		commit = strings.TrimSpace(string(output))
 	}
 
 	if buildDate == "" {
