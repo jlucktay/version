@@ -73,12 +73,12 @@ func Details() (string, error) {
 	}
 
 	if buildDate == "" {
-		osfi, err := os.Stat(exePath)
+		fi, err := os.Stat(exePath)
 		if err != nil {
 			return "", fmt.Errorf("could not stat current executable: %w", err)
 		}
 
-		buildDate = osfi.ModTime().Format(time.RFC3339)
+		buildDate = fi.ModTime().Format(time.RFC3339)
 	}
 
 	if builtBy == "" {
