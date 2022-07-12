@@ -5,13 +5,12 @@ package version
 import (
 	"fmt"
 	"os"
-	"os/exec"
-	"os/user"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"time"
 )
+
+const unknownValue = "unknown"
 
 // Symbols used by goreleaser via ldflags.
 var (
@@ -37,7 +36,7 @@ var (
 )
 
 // Details returns a string describing the current binary.
-func Details() (string, error) {
+func Details() string {
 	var exePath string
 
 	if executable == "" || buildDate == "" {
@@ -45,7 +44,7 @@ func Details() (string, error) {
 
 		exePath, err = os.Executable()
 		if err != nil {
-			return "", fmt.Errorf("could not look up path of current executable: %w", err)
+			exePath = unknownValue
 		}
 	}
 
@@ -54,42 +53,26 @@ func Details() (string, error) {
 	}
 
 	if version == "" {
-		version = "v0.0.0-unknown"
+		version = "v0.0.0-" + unknownValue
 	}
 
 	if commit == "" {
-		if _, err := exec.LookPath("git"); err != nil {
-			commit = "git-not-available"
-		} else {
-			cmd := exec.Command("git", "describe", "--always", "--dirty")
-
-			output, err := cmd.Output()
-			if err != nil {
-				return "", fmt.Errorf("could not run '%s': %w", cmd, err)
-			}
-
-			commit = strings.TrimSpace(string(output))
-		}
+		commit = unknownValue
 	}
 
 	if buildDate == "" {
 		fi, err := os.Stat(exePath)
 		if err != nil {
-			return "", fmt.Errorf("could not stat current executable: %w", err)
+			buildDate = unknownValue
 		}
 
 		buildDate = fi.ModTime().Format(time.RFC3339)
 	}
 
 	if builtBy == "" {
-		currUser, err := user.Current()
-		if err != nil {
-			return "", fmt.Errorf("could not get current user: %w", err)
-		}
-
-		builtBy = currUser.Username
+		builtBy = unknownValue
 	}
 
 	return fmt.Sprintf("%s %s built by %s from commit %s with %s at %s.",
-		executable, version, builtBy, commit, runtime.Version(), buildDate), nil
+		executable, version, builtBy, commit, runtime.Version(), buildDate)
 }
