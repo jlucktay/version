@@ -14,6 +14,14 @@ on:
     paths:
       - "**.go"
 
+# Concurrency ensures that only a single workflow using the same concurrency group will run at a time.
+# When a workflow is queued in the same repository and concurrency group, any workflow in progress will be cancelled.
+# This concurrency group is keyed to the 'ref' property in the 'github' context, to map back to the branch/tag that
+# triggered this workflow run.
+concurrency:
+  cancel-in-progress: true
+  group: test_lint_build_release_${{ github.ref }}
+
 jobs:
   build:
     name: Test and lint and build
@@ -21,9 +29,9 @@ jobs:
     strategy:
       matrix:
         go-version:
-          - 1.16.x
-          - 1.17.x
-          - 1.18.x
+          - "1.16"
+          - "1.17"
+          - "1.18"
         platform:
           - ubuntu-latest
           - macos-latest
@@ -32,12 +40,32 @@ jobs:
 
     steps:
       - name: Set up Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # https://github.com/mvdan/github-actions-golang#how-do-i-set-up-caching-between-builds
+      - name: Cache between runs
+        uses: actions/cache@v3
+        with:
+          # In order:
+          # * Module download cache
+          # * Build cache (Linux)
+          # * Build cache (Mac)
+          # * Build cache (Windows)
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            ~/Library/Caches/go-build
+            %LocalAppData%\go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
 
       - name: Update 'make' and run 'make all' on Linux
         if: ${{ matrix.platform == 'ubuntu-latest' }}

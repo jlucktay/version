@@ -24,9 +24,11 @@
 
 # End of https://www.toptal.com/developers/gitignore/api/go
 
+# Builds and binaries
+/bin/
+/hack/bin/
+version
+
 # Makefile things
 /out/
 /tmp/
-
-# Binaries
-template-go
