@@ -6,7 +6,7 @@ updates:
     schedule:
       day: sunday
       interval: weekly
-      time: 03:00
+      time: "03:00"
       timezone: UTC
 
   # Check for updates to Go modules every week.
@@ -16,5 +16,5 @@ updates:
     schedule:
       day: sunday
       interval: weekly
-      time: 04:00
+      time: "04:00"
       timezone: UTC
