@@ -1,4 +1,11 @@
 {
+  "files.exclude": {
+    "out": true,
+    "tmp": true
+  },
+  "go.testEnvVars": {
+    "IS_NO_COLOR": true
+  },
   "gopls": {
     "formatting.local": "go.jlucktay.dev/version"
   }
