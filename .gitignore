@@ -27,7 +27,6 @@
 # Builds and binaries
 /bin/
 /hack/bin/
-version
 
 # Makefile things
 /out/
