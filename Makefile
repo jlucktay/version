@@ -4,7 +4,7 @@
 # - https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 
 # Default - top level rule is what gets run when you run just 'make' without specifying a goal/target.
-.DEFAULT_GOAL := build
+.DEFAULT_GOAL := help
 
 # Make will delete the target of a rule if it has changed and its recipe exits with a nonzero exit status, just as it
 # does when it receives a signal.
@@ -57,10 +57,14 @@ MAKEFLAGS += --jobs
 all: test lint build ## Test and lint and build.
 .PHONY: all
 
-# Adjust the width of the first column by changing the '-20s' value in the printf pattern.
-help:
-> @grep -E '^[a-zA-Z0-9_-]+:.*? ## .*$$' $(filter-out .env, $(MAKEFILE_LIST)) | sort \
-  | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+# Adjust the width of the first column by changing the '-25s' value in the HELP_FORMAT variable.
+HELP_FORMAT="  \033[36m%-25s\033[0m %s\n"
+help: ## Display this usage information.
+> @echo "Valid targets:"
+> @grep -E '^[^ ]+:.*?## .*$$' $(filter-out .env, $(MAKEFILE_LIST)) \
+  | sort \
+  | awk 'BEGIN { FS = ":.*?## " }; \
+    { printf $(HELP_FORMAT), $$1, $$2 }'
 .PHONY: help
 
 # Set up some lazy initialisation functions to find code files, so that targets using the output of '$(shell ...)' only
@@ -88,7 +92,7 @@ lint: tmp/.linted.sentinel ## Lint all of the Go code. Will also test.
 
 # Builds look for image ID files to determine whether or not they need to build again.
 # If any Go code file has been changed since the image ID file was last touched, it will trigger a rebuild.
-build: tmp/.built.sentinel ## [DEFAULT] Build the library. Will also test and lint.
+build: tmp/.built.sentinel ## Build the library. Will also test and lint.
 .PHONY: build
 
 clean: ## Clean up any build output, test coverage, and the temp and output sub-directories.
@@ -106,7 +110,7 @@ clean-all: clean clean-hack ## Clean all of the things.
 # Tests - re-run if any Go files have changes since 'tmp/.tests-passed.sentinel' was last touched.
 tmp/.tests-passed.sentinel: $(GO_FILES)
 > mkdir -p $(@D)
-> go test -v ./...
+> go test -count=1 -v ./...
 > touch $@
 
 tmp/.cover-tests-passed.sentinel: $(GO_FILES)
@@ -149,7 +153,7 @@ tmp/.linted.golangci-lint.sentinel: .golangci.yaml hack/bin/golangci-lint tmp/.t
 
 tmp/.built.sentinel: tmp/.linted.sentinel
 > mkdir -p $(@D)
-> go build -ldflags="-buildid= -w" -trimpath -v
+> go build -trimpath -v
 > touch $@
 
 gofmt: ## Runs 'gofmt -s' to format and simplify all Go code.
