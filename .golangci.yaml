@@ -93,7 +93,6 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - deadcode
     - dogsled
     - dupl
     - errcheck
@@ -118,13 +117,11 @@ linters:
     - nolintlint
     - revive
     - staticcheck
-    - structcheck
     - stylecheck
     - typecheck
     - unconvert
     - unparam
     - unused
-    - varcheck
     - whitespace
     - wrapcheck
     - wsl
