@@ -12,8 +12,6 @@ import (
 	"time"
 )
 
-//go:generate bash version.sh
-
 const unknownValue = "unknown"
 
 // Symbols used by goreleaser via ldflags.
@@ -24,7 +22,6 @@ var (
 
 	// Version is the semver-compatible git tag that this binary was built from.
 	// Defaults to 'v0.0.0-unknown'.
-	//go:embed version.txt
 	version string
 
 	// BuiltBy is the name of the user that built the currently executing binary.
