@@ -31,3 +31,6 @@
 # Makefile things
 /out/
 /tmp/
+
+# Generated
+version.txt
