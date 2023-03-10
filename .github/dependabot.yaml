@@ -1,20 +1,29 @@
 version: 2
 updates:
   # Check for updates to GitHub Actions every week.
-  - package-ecosystem: github-actions
-    directory: /
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
-      day: sunday
-      interval: weekly
+      day: "sunday"
+      interval: "weekly"
       time: "03:00"
-      timezone: UTC
+      timezone: "UTC"
+    commit-message:
+      prefix: "Actions"
+      include: "scope"
+    open-pull-requests-limit: 3
 
-  # Check for updates to Go modules every week.
-  - package-ecosystem: gomod
-    directory: /
-    open-pull-requests-limit: 10
+  # Check for updates to direct Go dependencies every week.
+  - package-ecosystem: "gomod"
+    directory: "/"
     schedule:
-      day: sunday
-      interval: weekly
+      day: "sunday"
+      interval: "weekly"
       time: "04:00"
-      timezone: UTC
+      timezone: "UTC"
+    allow:
+      - dependency-type: "direct"
+    commit-message:
+      prefix: "Go"
+      include: "scope"
+    open-pull-requests-limit: 3
